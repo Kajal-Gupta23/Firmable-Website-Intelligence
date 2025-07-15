@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import { Search, Plus, X, Loader2, AlertCircle } from 'lucide-react';
 import { WebsiteAnalysisRequest, WebsiteAnalysisResponse } from '../types/api';
+import { apiService } from '../services/api';
 
-interface WebsiteAnalyzerProps {
-  onAnalysisComplete: (result: WebsiteAnalysisResponse) => void;
-}
+// type WebsiteAnalyzerProps = {
+//   onAnalysisComplete: (result: WebsiteAnalysisResponse) => void;
+// }
 
-export const WebsiteAnalyzer: React.FC<WebsiteAnalyzerProps> = ({ onAnalysisComplete }) => {
+export const WebsiteAnalyzer = ({ onAnalysisComplete }) => {
   const [url, setUrl] = useState('');
   const [questions, setQuestions] = useState<string[]>(['']);
   const [isLoading, setIsLoading] = useState(false);
@@ -34,37 +35,9 @@ export const WebsiteAnalyzer: React.FC<WebsiteAnalyzerProps> = ({ onAnalysisComp
     setError(null);
 
     try {
-      // Mock response for demo purposes
-      // In real implementation, use: await apiService.analyzeWebsite(request);
-      const mockResponse: WebsiteAnalysisResponse = {
-        url: url,
-        analysis_timestamp: new Date().toISOString(),
-        company_info: {
-          industry: "Software Development",
-          company_size: "Medium (50-200 employees)",
-          location: "San Francisco, CA, USA",
-          core_products_services: ["Cloud CRM", "Customer Support Software"],
-          unique_selling_proposition: "AI-powered CRM that predicts customer churn with 95% accuracy",
-          target_audience: "Small to Medium Businesses (SMBs)",
-          contact_info: {
-            email: "info@example.com",
-            phone: "+1-555-123-4567",
-            social_media: {
-              linkedin: "https://linkedin.com/company/example",
-              twitter: "https://twitter.com/example"
-            }
-          }
-        },
-        extracted_answers: questions.filter(q => q.trim()).map(question => ({
-          question,
-          answer: `AI-generated answer for: ${question}`
-        }))
-      };
-
-      // Simulate API delay
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      onAnalysisComplete(mockResponse);
+      const response = await apiService.analyzeWebsite({ url, questions: questions.filter(q => q.trim()) });
+      console.log('Analysis Result:', response);
+      onAnalysisComplete(response);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Analysis failed');
     } finally {

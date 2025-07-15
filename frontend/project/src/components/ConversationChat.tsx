@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Send, Bot, User, Loader2 } from 'lucide-react';
 import { ConversationEntry, WebsiteAnalysisResponse } from '../types/api';
+import { apiService } from '../services/api'; // Adjust the import based on your project structure
 
 interface ConversationChatProps {
   analysisResult: WebsiteAnalysisResponse;
@@ -36,16 +37,18 @@ export const ConversationChat: React.FC<ConversationChatProps> = ({ analysisResu
       timestamp: new Date().toISOString()
     };
 
+    setMessages(prev => [...prev, userMessage]); // Optimistically update the UI
+
     try {
-      // Mock response for demo purposes
-      // In real implementation, use: await apiService.askQuestion(request);
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      const mockResponse = `Based on the analysis of ${analysisResult.url}, here's what I found regarding "${userQuery}": This is an AI-generated response that would provide detailed insights about the company's ${userQuery.toLowerCase()}. The response would be contextual and based on the previously scraped website content.`;
+      const response = await apiService.converse({
+        url: analysisResult.url,
+        query: userQuery,
+        conversation_history: [...messages, userMessage].map(m => ({ user: m.user_query, agent: m.agent_response }))
+      });
 
       const completeMessage: ConversationEntry = {
         user_query: userQuery,
-        agent_response: mockResponse,
+        agent_response: response.agent_response,
         timestamp: new Date().toISOString()
       };
 
