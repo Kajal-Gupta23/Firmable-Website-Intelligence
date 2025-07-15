@@ -1,0 +1,17 @@
+# fastapi
+# uvicorn
+# requests
+# beautifulsoup4
+# pydantic
+# python-dotenv
+# google-generativeai
+
+# requirements.txt
+fastapi
+uvicorn
+httpx
+beautifulsoup4
+pydantic
+slowapi
+google-generativeai
+python-dotenv
